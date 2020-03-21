@@ -1,216 +1,73 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-// import { auth } from '../store';
-import { Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
+import { signUp } from '../store/redux/authReducer';
 
-/**
- * COMPONENT
- */
-const Register = props => {
-  const { name, displayName, handleSubmit, error } = props;
+class Register extends Component {
+	state = {
+		firstName: '',
+		lastName: '',
+		email: '',
+		password: ''
+	};
 
-  return (
-    <div>
-      <div className="main-header">
-        <div className="showcase container">
-          <div className="row">
-            <div className="col s12 m10 offset-m1 center">
-              <div className="card-panel grey-text">
-                {displayName === 'Login' ? (
-                  <div>
-                    New User? <Link to="/register">Register</Link>
-                    <form onSubmit={handleSubmit} name={name}>
-                      <div className="input-field">
-                        <i className="material-icons prefix grey-text">email</i>
-                        <label htmlFor="email">Email</label>
-                        <input
-                          name="email"
-                          type="email"
-                          className="validate grey-text text-darken-2"
-                          required
-                        />
-                      </div>
+	handleChange = (event) => {
+		event.preventDefault();
+		this.setState({
+			[event.target.name]: event.target.value
+		});
+	};
 
-                      <div className="input-field">
-                        <i className="material-icons prefix grey0text">lock</i>
-                        <label htmlFor="password">Password</label>
-                        <input
-                          name="password"
-                          type="password"
-                          className="validate grey-text text-darken-2"
-                          required
-                        />
-                      </div>
-                      <div className="input-field center">
-                        <button className="btn" type="submit">
-                          {displayName}
-                        </button>
-                      </div>
-                      {error && error.response && (
-                        <div> {error.response.data} </div>
-                      )}
-                    </form>
-                    <div className="input-field center">
-                      <a
-                        className="waves-effect waves-light btn-small blue"
-                        href="/auth/google"
-                      >
-                        <i className="fab fa-google left" />
-                        {`${displayName} with Google`}
-                      </a>
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <h3>Register</h3>
-                    <p>
-                      Already have an account? <Link to="/login">Login</Link>
-                    </p>
-                    <form onSubmit={handleSubmit} name={name}>
-                      <div>
-                        <div className="row">
-                          <div className="input-field col s6 l6">
-                            <i className="material-icons prefix grey-text">
-                              person
-                            </i>
-                            <label htmlFor="firstName">First Name</label>
-                            <input
-                              name="firstName"
-                              type="text"
-                              className="validate grey-text text-darken-2"
-                              required
-                            />
-                            <span
-                              className="helper-text"
-                              data-error="* required"
-                            />
-                          </div>
-                          <div className="input-field col s6 l6">
-                            <label htmlFor="lastName">Last Name</label>
-                            <input
-                              name="lastName"
-                              type="text"
-                              className="validate grey-text text-darken-2"
-                              required
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="input-field">
-                        <i className="material-icons prefix grey-text">email</i>
-                        <label htmlFor="email">Email</label>
-                        <input
-                          name="email"
-                          type="email"
-                          className="validate grey-text text-darken-2"
-                          required
-                        />
-                      </div>
-                      <div className="input-field">
-                        <i className="material-icons prefix grey-text">lock</i>
-                        <label htmlFor="password">Password</label>
-                        <input
-                          name="password"
-                          type="password"
-                          className="validate grey-text text-darken-2"
-                          required
-                        />
-                      </div>
-                      <div className="input-field center">
-                        <button className="btn" type="submit">
-                          {displayName}
-                        </button>
-                      </div>
-                      {error && error.response && (
-                        <div> {error.response.data} </div>
-                      )}
-                    </form>
-                    <div className="input-field center">
-                      <a
-                        className="waves-effect waves-light btn-small blue"
-                        href="/auth/google"
-                      >
-                        <i className="fab fa-google left" />{' '}
-                        {`${displayName} with Google`}
-                      </a>
-                    </div>
-                  </div>
-                )}
-                {/* end form */}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+	handleSubmit = (event) => {
+		event.preventDefault();
+		this.props.signUp(this.state);
+	};
+
+	render() {
+		const { auth, authError } = this.props;
+		if (auth.uid) return <Redirect to="/" />;
+
+		return (
+			<div className="">
+				<form className="" onSubmit={this.handleSubmit}>
+					<h5 className="">Sign Up</h5>
+					<div className="">
+						<label htmlFor="firstName">First Name</label>
+						<input type="text" name="firstName" onChange={this.handleChange} />
+					</div>
+					<div className="">
+						<label htmlFor="lastName">Last Name</label>
+						<input type="text" name="lastName" onChange={this.handleChange} />
+					</div>
+					<div className="">
+						<label htmlFor="email">Email</label>
+						<input type="email" name="email" onChange={this.handleChange} />
+					</div>
+					<div className="">
+						<label htmlFor="password">Password</label>
+						<input type="password" name="password" onChange={this.handleChange} />
+					</div>
+					<div className="">
+						<button className="">Sign Up</button>
+						<div className="">{authError ? <p>{authError}</p> : null}</div>
+					</div>
+				</form>
+			</div>
+		);
+	}
+}
+
+const mapStateToProps = (state) => {
+	return {
+		auth: state.firebase.auth
+		// authError: state.auth.authError
+	};
 };
 
-/**
- * CONTAINER
- *   Note that we have two different sets of 'mapStateToProps' functions -
- *   one for Login, and one for Signup. However, they share the same 'mapDispatchToProps'
- *   function, and share the same Component. This is a good example of how we
- *   can stay DRY with interfaces that are very similar to each other!
- */
-const mapLogin = state => {
-  return {
-    name: 'login',
-    displayName: 'Login',
-    error: state.user.error
-  };
+const mapDispatchToProps = (dispatch) => {
+	return {
+		signUp: (newUser) => dispatch(signUp(newUser))
+	};
 };
 
-const mapSignup = state => {
-  return {
-    name: 'signup',
-    displayName: 'Sign Up',
-    error: state.user.error
-  };
-};
-
-const mapDispatch = dispatch => {
-  return {
-    handleSubmit(evt) {
-      evt.preventDefault();
-      const formName = evt.target.name;
-      const email = evt.target.email.value;
-      const password = evt.target.password.value;
-
-      let firstName = '';
-      let lastName = '';
-      if (evt.target.firstName) {
-        firstName = evt.target.firstName.value;
-      }
-      if (evt.target.lastName) {
-        lastName = evt.target.lastName.value;
-      }
-      console.log(
-        'formName',
-        formName,
-        'firstName: ',
-        firstName,
-        'lastName: ',
-        lastName
-      );
-
-      // dispatch(auth(email, password, formName, firstName, lastName));
-    }
-  };
-};
-
-// export const Login = connect(mapLogin, mapDispatch)(AuthForm);
-// export const Signup = connect(mapSignup, mapDispatch)(AuthForm);
-
-/**
- * PROP TYPES
- */
-Register.propTypes = {
-  name: PropTypes.string.isRequired,
-  displayName: PropTypes.string.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
-  error: PropTypes.object
-};
-
-export default Register;
+export default connect(mapStateToProps, mapDispatchToProps)(Register);
