@@ -5,6 +5,8 @@ import {
   deletedIngredient
 } from '../store/redux/ingredientsReducer';
 import { Redirect } from 'react-router-dom';
+import OutputSpeech from './Speech/OutputSpeech';
+import InputSpeech from './Speech/InputSpeech';
 
 export class List extends Component {
   constructor(props) {
@@ -23,7 +25,13 @@ export class List extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
+    // this.playback(this.state.name);
     this.props.addIngredient(this.state);
+    this.setState({ name: '' });
+  };
+
+  startedListening = name => {
+    this.setState({ name: name });
   };
 
   render() {
@@ -63,7 +71,11 @@ export class List extends Component {
               <div className="row">
                 <div className="col s12 m10 offset-m1 center">
                   <label htmlFor="ingredient">Add Ingredient</label>
-                  <input type="text" name="name" onChange={this.handleChange} />
+                  <input
+                    value={this.state.name}
+                    name="name"
+                    onChange={this.handleChange}
+                  />
                 </div>
                 <button
                   className="btn waves-effect waves-light indigo center"
@@ -72,6 +84,11 @@ export class List extends Component {
                 >
                   Add Ingredient
                 </button>
+                <OutputSpeech
+                  content={this.state.name}
+                  onClick={() => this.handleSubmit}
+                ></OutputSpeech>
+                <InputSpeech startedListening={this.startedListening} />
               </div>
             </div>
           </div>
