@@ -1,47 +1,42 @@
 import { auth, db } from '../../fbConfig/fbConfig';
 
-const GOT_INGREDIENTS = 'GOT_INGREDIENTS';
-const ADDED_INGREDIENT = 'ADDED_INGREDIENT';
-const DELETED_INGREDIENT = 'DELETED_INGREDIENT';
+const GET_INGREDIENTS = 'GET_INGREDIENTS';
+const ADD_INGREDIENT = 'ADD_INGREDIENT';
+const DELETE_INGREDIENT = 'DELETE_INGREDIENT';
 
-const addedIngredient = ingredient => {
+const addIngredient = ingredient => {
   return {
-    type: ADDED_INGREDIENT,
+    type: ADD_INGREDIENT,
     ingredient
   };
 };
 
-const gotIngredients = ingredients => {
+const getIngredients = ingredients => {
   return {
-    type: GOT_INGREDIENTS,
+    type: GET_INGREDIENTS,
     ingredients
   };
 };
 
-const deletedIngredient = ingredient => {
+const deleteIngredient = ingredient => {
   return {
-    type: DELETED_INGREDIENT,
+    type: DELETE_INGREDIENT,
     ingredient
   };
 };
 
-export const addIngredient = (ingredient, userId) => {
+export const addedIngredient = ingredient => {
   return async dispatch => {
     try {
-      const newIngredient = await db
-        .collection('ingredients')
-        .doc(userId)
-        .set({
-          name: ingredient.name
-        });
-      dispatch(gotIngredients(newIngredient));
+      await db.collection('ingredients').add(ingredient);
+      dispatch(addIngredient(ingredient));
     } catch (error) {
       console.log('No Ingredients', error);
     }
   };
 };
 
-export const getIngredients = userId => {
+export const gotIngredients = userId => {
   return async dispatch => {
     try {
       const ingredients = [];
@@ -54,20 +49,20 @@ export const getIngredients = userId => {
             ingredients.push(doc.data());
           });
         });
-      dispatch(gotIngredients(ingredients));
+      dispatch(getIngredients(ingredients));
     } catch (error) {
       console.log('No Ingredients', error);
     }
   };
 };
 
-export const deleteIngredient = (ingredient, userId) => {
+export const deletedIngredient = ingredient => {
   return async dispatch => {
     try {
       console.log('DELETE INGREDIENT THUNK');
       await db
         .collection('ingredients')
-        .where('userId', '==', userId)
+        .doc(ingredient.id)
         .remove();
     } catch (error) {
       console.error('Error deleting ingredient', error);
@@ -77,11 +72,11 @@ export const deleteIngredient = (ingredient, userId) => {
 
 const ingredientsReducer = (state = [], action) => {
   switch (action.type) {
-    case GOT_INGREDIENTS:
+    case GET_INGREDIENTS:
       return action.ingredients;
-    case ADDED_INGREDIENT:
+    case ADD_INGREDIENT:
       return [...state, action.ingredient];
-    case DELETED_INGREDIENT:
+    case DELETE_INGREDIENT:
       return state.filter(ingredient => ingredient.id !== action.ingredient);
     default:
       return state;

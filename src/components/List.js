@@ -1,87 +1,95 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  addIngredient,
-  deleteIngredient
+  addedIngredient,
+  deletedIngredient
 } from '../store/redux/ingredientsReducer';
+import { Redirect } from 'react-router-dom';
 
 export class List extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: '',
+      userId: props.auth.uid
+    };
+  }
+
+  handleChange = event => {
+    this.setState({
+      [event.target.name]: event.target.value
+    });
+  };
+
+  handleSubmit = event => {
+    event.preventDefault();
+    this.props.addIngredient(this.state);
+  };
+
   render() {
-    //====================MIKE's REFACTOR======================//
+    const { auth } = this.props;
+    if (!auth.uid) return <Redirect to="/login" />;
+    console.log(this.props);
     const { ingredients } = this.props;
     const ingredientList = ingredients.length ? (
       ingredients.map(ingredient => {
         return (
           <div key={ingredient.name}>
             <p>{ingredient.name}</p>
-            <div className="col s12 l6 right">
-              <button
-                className="btn-floating waves-effect waves-light red right"
-                type="button"
-                name="action"
-                onClick={() => this.props.deleteIngredient(ingredient)}
-              >
-                <i className="material-icons">x</i>
-              </button>
-            </div>
+            <button
+              className="btn-small waves-effect waves-light red right"
+              type="button"
+              name="action"
+              onClick={() => this.props.deleteIngredient(ingredient)}
+            >
+              <i className="material-icons">x</i>
+            </button>
           </div>
         );
       })
     ) : (
       <p>No Ingredients Yet</p>
     );
-    //====================END MIKE's REFACTOR===============//
-
-    //====================YAN'S ORIGINAL CODE===============//
-    /* <ul>
-          {this.props.ingredients.map(ingredient => (
-            <li key={ingredient.name}>{ingredient.name}</li>
-          ))}
-        </ul> */
-    //===============END YAN'S CODE=======================//
-
     return (
       // INGREDIENT LIST FORM
       <div>
-        <h1>Your Shopping List</h1>
+        <h1 className="center-align">Your Shopping List</h1>
         {ingredientList}
 
         {/* INPUT ITEM FORM */}
-        <div className="main-header">
-          <div className="showcase container">
-            <div className="row">
-              <div className="col s12 m10 offset-m1 center">
-                <label htmlFor="ingredient">Add Ingredient</label>
-                <input
-                  type="text"
-                  name="ingredient"
-                  onChange={this.handleChange}
-                />
+        <form onSubmit={this.handleSubmit}>
+          <div className="main-header">
+            <div className="showcase container">
+              <div className="row">
+                <div className="col s12 m10 offset-m1 center">
+                  <label htmlFor="ingredient">Add Ingredient</label>
+                  <input type="text" name="name" onChange={this.handleChange} />
+                </div>
+                <button
+                  className="btn waves-effect waves-light indigo center"
+                  type="submit"
+                  name="action"
+                >
+                  Add Ingredient
+                </button>
               </div>
-              <button
-                className="btn waves-effect waves-light indigo center"
-                type="button"
-                name="action"
-              >
-                Add Ingredient
-              </button>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  ingredients: state.ingredients
+  ingredients: state.ingredients,
+  auth: state.firebase.auth
 });
 
 const mapDispatchToProps = dispatch => ({
-  addIngredient: (ingredient, userId) =>
-    dispatch(addIngredient(ingredient, userId)),
+  addIngredient: ingredient => dispatch(addedIngredient(ingredient)),
   deleteIngredient: (ingredient, userId) =>
-    dispatch(deleteIngredient(ingredient, userId))
+    dispatch(deletedIngredient(ingredient, userId))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(List);

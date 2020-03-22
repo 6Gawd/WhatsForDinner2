@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { signIn } from '../store/redux/authReducer';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
+// import { withRouter } from 'react-router';
 
 class Login extends Component {
   state = {
@@ -18,11 +19,11 @@ class Login extends Component {
   handleSubmit = event => {
     event.preventDefault();
     this.props.signIn(this.state);
+    this.props.history.push('/list');
   };
 
   render() {
-    const { authError, auth } = this.props;
-    if (auth.uid) return <Redirect to="/" />;
+    const { auth } = this.props;
 
     return (
       <div>
@@ -33,6 +34,9 @@ class Login extends Component {
                 <div className="card-panel grey-text">
                   <form className="" onSubmit={this.handleSubmit}>
                     <h5 className="">Log In</h5>
+                    <h6>
+                      New User? <Link to="/register">Register</Link>
+                    </h6>
                     <div className="">
                       <label htmlFor="email">Email</label>
                       <input
@@ -53,9 +57,6 @@ class Login extends Component {
                       <button className="waves-effect waves-light btn-small indigo">
                         Login
                       </button>
-                      <div className="">
-                        {authError ? <p>{authError}</p> : null}
-                      </div>
                     </div>
                   </form>
                 </div>

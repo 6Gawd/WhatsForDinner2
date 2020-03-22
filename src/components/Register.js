@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import { signUp } from '../store/redux/authReducer';
 
 class Register extends Component {
@@ -21,11 +21,12 @@ class Register extends Component {
   handleSubmit = event => {
     event.preventDefault();
     this.props.signUp(this.state);
+    this.props.history.push('/list');
   };
 
   render() {
     const { auth, authError } = this.props;
-    if (auth.uid) return <Redirect to="/" />;
+    if (auth.uid) return <Redirect to="/login" />;
 
     return (
       <div>
@@ -36,6 +37,9 @@ class Register extends Component {
                 <div className="card-panel grey-text">
                   <form className="" onSubmit={this.handleSubmit}>
                     <h5 className="">Register</h5>
+                    <h6>
+                      Already have an account? <Link to="/login">Login</Link>
+                    </h6>
                     <div className="">
                       <label htmlFor="firstName">First Name</label>
                       <input
