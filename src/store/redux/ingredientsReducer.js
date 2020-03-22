@@ -18,10 +18,10 @@ const getIngredients = ingredients => {
   };
 };
 
-const deleteIngredient = ingredient => {
+const deleteIngredient = id => {
   return {
     type: DELETE_INGREDIENT,
-    ingredient
+    id
   };
 };
 
@@ -46,24 +46,27 @@ export const gotIngredients = userId => {
         .get()
         .then(function(querySnapshot) {
           querySnapshot.forEach(function(doc) {
-            ingredients.push(doc.data());
+            const item = doc.data();
+            item.id = doc.id;
+            ingredients.push(item);
           });
         });
       dispatch(getIngredients(ingredients));
     } catch (error) {
-      console.log('No Ingredients', error);
+      console.error('No Ingredients', error);
     }
   };
 };
 
-export const deletedIngredient = ingredient => {
+export const deletedIngredient = id => {
   return async dispatch => {
     try {
       console.log('DELETE INGREDIENT THUNK');
       await db
         .collection('ingredients')
-        .doc(ingredient.id)
-        .remove();
+        .doc(id)
+        .delete();
+      dispatch(deleteIngredient(id));
     } catch (error) {
       console.error('Error deleting ingredient', error);
     }
@@ -77,7 +80,7 @@ const ingredientsReducer = (state = [], action) => {
     case ADD_INGREDIENT:
       return [...state, action.ingredient];
     case DELETE_INGREDIENT:
-      return state.filter(ingredient => ingredient.id !== action.ingredient);
+      return state.filter(ingredient => ingredient.id !== action.id);
     default:
       return state;
   }

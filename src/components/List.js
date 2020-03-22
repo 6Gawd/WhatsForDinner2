@@ -29,18 +29,18 @@ export class List extends Component {
   render() {
     const { auth } = this.props;
     if (!auth.uid) return <Redirect to="/login" />;
-    console.log(this.props);
+    console.log('LIST PROPS', this.props);
     const { ingredients } = this.props;
     const ingredientList = ingredients.length ? (
       ingredients.map(ingredient => {
         return (
-          <div key={ingredient.name}>
+          <div key={ingredient.id}>
             <p>{ingredient.name}</p>
             <button
               className="btn-small waves-effect waves-light red right"
               type="button"
               name="action"
-              onClick={() => this.props.deleteIngredient(ingredient)}
+              onClick={() => this.props.deleteIngredient(ingredient.id)}
             >
               <i className="material-icons">x</i>
             </button>
@@ -83,13 +83,13 @@ export class List extends Component {
 
 const mapStateToProps = state => ({
   ingredients: state.ingredients,
-  auth: state.firebase.auth
+  auth: state.firebase.auth,
+  test: state
 });
 
 const mapDispatchToProps = dispatch => ({
   addIngredient: ingredient => dispatch(addedIngredient(ingredient)),
-  deleteIngredient: (ingredient, userId) =>
-    dispatch(deletedIngredient(ingredient, userId))
+  deleteIngredient: id => dispatch(deletedIngredient(id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(List);
