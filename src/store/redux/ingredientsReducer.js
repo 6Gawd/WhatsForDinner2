@@ -28,8 +28,13 @@ const deleteIngredient = id => {
 export const addedIngredient = ingredient => {
   return async dispatch => {
     try {
-      await db.collection('ingredients').add(ingredient);
-      dispatch(addIngredient(ingredient));
+      const newIngredient = { ...ingredient };
+      await db
+        .collection('ingredients')
+        .add(ingredient)
+        .then(obj => (newIngredient.id = obj.id));
+      console.log('addIngredient thunk', newIngredient);
+      dispatch(addIngredient(newIngredient));
     } catch (error) {
       console.log('No Ingredients', error);
     }

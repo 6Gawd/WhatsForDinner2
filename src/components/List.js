@@ -5,6 +5,8 @@ import {
   deletedIngredient
 } from '../store/redux/ingredientsReducer';
 import { Redirect } from 'react-router-dom';
+import OutputSpeech from './Speech/OutputSpeech';
+import Speech from 'react-speech';
 
 export class List extends Component {
   constructor(props) {
@@ -23,8 +25,14 @@ export class List extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
+    // this.playback(this.state.name);
     this.props.addIngredient(this.state);
+    this.setState({ name: '' });
   };
+
+  // playback = name => {
+  //   return <SpeechButton content={name} />;
+  // };
 
   render() {
     const { auth } = this.props;
@@ -72,6 +80,10 @@ export class List extends Component {
                 >
                   Add Ingredient
                 </button>
+                <OutputSpeech
+                  content={this.state.name}
+                  onClick={() => this.handleSubmit}
+                ></OutputSpeech>
               </div>
             </div>
           </div>
