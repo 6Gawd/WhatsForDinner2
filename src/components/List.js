@@ -6,11 +6,7 @@ export class List extends Component {
 		return (
 			<div>
 				<h1>LIST</h1>
-				<ul>
-					{/* {this.props.ingredients.map((ingredient) => {
-						<li>{ingredient.name}</li>;
-					})} */}
-				</ul>
+				<ul>{this.props.ingredients.map((ingredient) => <li key={ingredient.name}>{ingredient.name}</li>)}</ul>
 			</div>
 		);
 	}

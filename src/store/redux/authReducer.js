@@ -1,4 +1,5 @@
 import { getIngredients } from './ingredientsReducer';
+import { auth, db } from '../../fbConfig/fbConfig';
 
 //ACTION TYPES
 const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
@@ -9,10 +10,9 @@ const SIGNOUT_SUCCESS = 'SIGNOUT_SUCCESS';
 
 //Action Creators
 export const signIn = (credentials) => {
-	return async (dispatch, getState, { getFirebase }) => {
+	return async (dispatch) => {
 		try {
-			const firebase = getFirebase();
-			const response = await firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password);
+			const response = await auth.signInWithEmailAndPassword(credentials.email, credentials.password);
 			console.log('signin response', response);
 			dispatch(getIngredients(response.user.uid));
 			dispatch({ type: 'LOGIN_SUCCESS' });
@@ -23,10 +23,9 @@ export const signIn = (credentials) => {
 };
 
 export const signOut = () => {
-	return async (dispatch, getState, { getFirebase }) => {
+	return async (dispatch) => {
 		try {
-			const firebase = getFirebase();
-			await firebase.auth().signOut();
+			await auth.signOut();
 			dispatch({ type: 'SIGNOUT_SUCCESS' });
 		} catch (error) {
 			console.error(error);
@@ -35,13 +34,11 @@ export const signOut = () => {
 };
 
 export const signUp = (newUser) => {
-	return async (dispatch, getState, { getFirebase, getFirestore }) => {
+	return async (dispatch) => {
 		try {
-			const firebase = getFirebase();
-			const firestore = getFirestore();
-			const response = await firebase.auth().createUserWithEmailAndPassword(newUser.email, newUser.password);
+			const response = await auth.createUserWithEmailAndPassword(newUser.email, newUser.password);
 			const syncUser = async (response) => {
-				await firestore.collection('users').doc(response.user.uid).set({
+				await db.collection('users').doc(response.user.uid).set({
 					firstName: newUser.firstName,
 					lastName: newUser.lastName
 				});

@@ -1,3 +1,5 @@
+import { auth, db } from '../../fbConfig/fbConfig';
+
 const GOT_INGREDIENTS = 'GOT_INGREDIENTS';
 const ADDED_INGREDIENT = 'ADDED_INGREDIENT';
 
@@ -16,10 +18,9 @@ const gotIngredients = (ingredients) => {
 };
 
 export const addIngredient = (ingredient, userId) => {
-	return async (dispatch, getState, { getFirestore }) => {
+	return async (dispatch) => {
 		try {
-			const firestore = await getFirestore();
-			const newIngredient = await firestore.collection('ingredients').doc(userId).set({
+			const newIngredient = await db.collection('ingredients').doc(userId).set({
 				name: ingredient.name
 			});
 			dispatch(gotIngredients(newIngredient));
@@ -30,12 +31,10 @@ export const addIngredient = (ingredient, userId) => {
 };
 
 export const getIngredients = (userId) => {
-	return async (dispatch, getState, { getFirebase, getFirestore }) => {
+	return async (dispatch) => {
 		try {
-			// const firebase = getFirebase();
-			const firestore = getFirestore();
 			const ingredients = [];
-			await firestore.collection('ingredients').where('userId', '==', userId).get().then(function(querySnapshot) {
+			await db.collection('ingredients').where('userId', '==', userId).get().then(function(querySnapshot) {
 				querySnapshot.forEach(function(doc) {
 					ingredients.push(doc.data());
 				});
