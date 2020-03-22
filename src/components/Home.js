@@ -3,25 +3,30 @@ import { connect } from 'react-redux';
 import { signOut } from '../store/redux/authReducer';
 
 class Home extends Component {
-	render() {
-		console.log('props in home', this.props);
-		return (
-			<div>
-				<h1>HOME PAGE</h1>
+  render() {
+    console.log('props in home', this.props);
+    return (
+      <div>
+        <h1>HOME PAGE</h1>
 
-				<button onClick={this.props.signOut}>Log Out</button>
-			</div>
-		);
-	}
+        <button
+          className="waves-effect waves-light btn-small red"
+          onClick={this.props.signOut}
+        >
+          Log Out
+        </button>
+      </div>
+    );
+  }
 }
 
-const mapStateToProps = (state) => ({
-	auth: state.firebase.auth,
-	ingredients: state.ingredients
+const mapStateToProps = state => ({
+  auth: state.firebase.auth,
+  ingredients: state.ingredients
 });
 
-const mapDispatchToProps = (dispatch) => ({
-	signOut: () => dispatch(signOut())
+const mapDispatchToProps = dispatch => ({
+  signOut: () => dispatch(signOut())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
